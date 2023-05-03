@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lr.mapper.UserInfoMapper">
+
+    <resultMap id="userInfoResultMap" type="com.lr.po.UserInfo">
+        <id property="userId" column="user_id" />
+        <result property="username" column="username"/>
+        <result property="userPassword" column="user_password"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <select id="selectUserInfoById" resultMap="userInfoResultMap">
+        select * from user_info where user_id = #{id}
+    </select>
+
+    <select id="selectAllUsers" resultMap="userInfoResultMap">
+        select * from user_info
+    </select>
+
+    <insert id="insertUserInfo" parameterType="UserInfo" >
+        insert into user_info(username,user_password) values (#{username}, #{userPassword})
+    </insert>
+    
+    <update id="updateUsernameById">
+        update user_info set username=#{name1} where user_id = #{id}
+    </update>
+
+    <delete id="deleteUserById">
+        delete from user_info where user_id = #{id}
+    </delete>
+
+    <select id="queryByUsernameAndPWD" resultType="UserInfo">
+        select * from user_info where username = ${name1} and user_password = ${password}
+    </select>
+
+    <select id="queryByUsernameOrPwd" resultType="UserInfo" parameterType="UserInfo">
+        SELECT * FROM user_info
+        WHERE username = #{username}
+        <if test = "userPassword != null and userPassword != ''">
+            AND user_password = #{userPassword}
+        </if>
+    </select>
+
+    <!--ctrl+alt+l -->
+    <update id="updateUserInfoByParam"  parameterType="UserInfo">
+        update user_info
+        <set>
+            <if test="username != null and userPassword != ''">
+                username = #{username},
+            </if>
+            <if test="userPassword != null and userPassword != ''">
+                user_password = #{userPassword},
+            </if>
+            user_id = #{userId}
+        </set>
+        where user_id = #{userId}
+    </update>
+
+    <select id="selectUserInfoByIds" resultType="UserInfo">
+        SELECT *
+        FROM user_info
+        WHERE user_id in
+        <foreach item="id" index="index" collection="ids"
+                 open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="selectUserInfoByPages" resultType="UserInfo">
+        select * from user_info limit #{pageIndex}, #{pageSize}
+    </select>
+</mapper>
